@@ -1,0 +1,31 @@
+﻿@model IEnumerable<Travel_Agency_Service.Models.Trip> 
+@{
+    ViewData["Title"] = "Trips";
+}
+
+<h1>Available Trips</h1>
+<p>Choose your next adventure.</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Destination</th>
+            <th>Dates</th>
+            <th>Price</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var trip in Model)
+        {
+            <tr>
+                <td>@trip.Title</td>
+                <td>@trip.Destination</td>
+                <td>@trip.StartDate.ToString("yyyy-MM-dd") - @trip.EndDate.ToString("yyyy-MM-dd")</td>
+                <td>@trip.Price.ToString("C")</td>
+                <td>@trip.ShortDescription</td>
+            </tr>
+        }
+    </tbody>
+</table>
