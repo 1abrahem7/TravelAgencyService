@@ -1,0 +1,234 @@
+﻿@model IEnumerable<Travel_Agency_Service.Models.WaitingListItem>
+
+@{
+    var trip = ViewBag.Trip as Travel_Agency_Service.Models.Trip;
+    ViewData["Title"] = "Waiting List Queue";
+    int pos = 0;
+}
+
+@if (trip == null)
+{
+    <div class="container">
+        <div class="alert alert-danger">
+            <strong>Error:</strong> Trip not found.
+        </div>
+        <a asp-action="Index" class="btn btn-secondary">← Back to Waiting Lists</a>
+    </div>
+}
+else
+{
+
+<style>
+    .waiting-queue-header {
+        background: linear-gradient(135deg, #1e88e5 0%, #00acc1 100%);
+        color: white;
+        padding: 3rem 0;
+        margin: -20px -15px 30px -15px;
+        border-radius: 0 0 30px 30px;
+    }
+    
+    .queue-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .queue-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .position-badge {
+        background: linear-gradient(135deg, #1e88e5 0%, #00acc1 100%);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+</style>
+
+<div class="waiting-queue-header">
+    <div class="container">
+        <h1 class="mb-3">📋 Waiting List Queue</h1>
+        <h3 style="font-size: 1.5rem; opacity: 0.95;">@trip.Title</h3>
+        <p style="opacity: 0.9; margin-bottom: 0;">
+            📍 @trip.Destination, @trip.Country
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info fade-in">@TempData["Message"]</div>
+    }
+
+    <div class="queue-card">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h4 style="color: #1e88e5; margin-bottom: 1rem;">📊 Trip Information</h4>
+                <div class="mb-2">
+                    <strong>📅 Departure:</strong> @trip.StartDate.ToString("MMMM dd, yyyy")
+                </div>
+                <div class="mb-2">
+                    <strong>💰 Price:</strong> @trip.Price.ToString("C") per person
+                </div>
+                <div class="mb-2">
+                    <strong>🏨 Available Rooms:</strong>
+                    @if (trip.AvailableRooms > 0)
+                    {
+                        <span class="badge bg-success" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                            @trip.AvailableRooms available
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                            0 (Fully Booked)
+                        </span>
+                    }
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4 style="color: #1e88e5; margin-bottom: 1rem;">📈 Queue Statistics</h4>
+                <div class="mb-2">
+                    <strong>Total in Queue:</strong> <span class="badge bg-primary">@Model.Count()</span>
+                </div>
+                <div class="mb-2">
+                    <strong>✅ Notified:</strong> <span class="badge bg-info">@Model.Count(w => w.Notified)</span>
+                </div>
+                <div class="mb-2">
+                    <strong>⏳ Waiting:</strong> <span class="badge bg-warning">@Model.Count(w => !w.Notified)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="queue-actions">
+            <form asp-action="NotifyNext" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="tripId" value="@trip.Id" />
+                <button type="submit" class="btn btn-primary btn-lg">
+                    📧 Notify Next User
+                </button>
+            </form>
+
+            <form asp-action="Clear" method="post" class="d-inline" 
+                  onsubmit="return confirm('⚠️ Are you sure you want to clear the entire waiting list? This action cannot be undone.');">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="tripId" value="@trip.Id" />
+                <button type="submit" class="btn btn-danger btn-lg">
+                    🗑️ Clear Entire List
+                </button>
+            </form>
+
+            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                ← Back to All Waiting Lists
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📭</div>
+            <h4>No users in waiting list</h4>
+            <p class="text-muted mb-0">
+                This trip currently has no users in the waiting list.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, #1e88e5 0%, #00acc1 100%); color: white;">
+                <h4 class="mb-0">👥 Waiting List Queue (@Model.Count() users)</h4>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 80px;">Position</th>
+                                <th>User Name</th>
+                                <th>Email</th>
+                                <th>Joined Date</th>
+                                <th style="width: 120px;">Status</th>
+                                <th style="width: 150px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                pos++;
+                                <tr>
+                                    <td>
+                                        <div class="position-badge">@pos</div>
+                                    </td>
+                                    <td>
+                                        <strong>@(item.User?.FullName ?? "Unknown User")</strong>
+                                        @if (string.IsNullOrEmpty(item.User?.FullName))
+                                        {
+                                            <br />
+                                            <small class="text-muted">User ID: @item.UserId</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.User?.Email))
+                                        {
+                                            <a href="mailto:@item.User.Email" class="text-decoration-none">
+                                                @item.User.Email
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div>@item.JoinedAt.ToString("MMMM dd, yyyy")</div>
+                                        <small class="text-muted">@item.JoinedAt.ToString("HH:mm")</small>
+                                    </td>
+                                    <td>
+                                        @if (item.Notified)
+                                        {
+                                            <span class="badge bg-success">
+                                                ✅ Notified
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">
+                                                ⏳ Waiting
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <form asp-action="Remove" method="post" class="d-inline"
+                                              onsubmit="return confirm('⚠️ Are you sure you want to remove @(item.User?.FullName ?? "this user") from the waiting list?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.Id" />
+                                            <input type="hidden" name="tripId" value="@trip.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                🗑️ Remove
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+}

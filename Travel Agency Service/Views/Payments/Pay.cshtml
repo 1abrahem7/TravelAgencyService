@@ -1,0 +1,81 @@
+﻿@model Travel_Agency_Service.Models.PaymentViewModel
+@using Travel_Agency_Service.Models
+
+@{
+    ViewData["Title"] = "Payment";
+    var booking = ViewBag.Booking as Booking;
+}
+
+<h2>Payment</h2>
+
+@if (booking != null)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h4>@booking.Trip?.Title</h4>
+            <p>
+                <strong>Destination:</strong> @booking.Trip?.Destination, @booking.Trip?.Country<br />
+                <strong>Dates:</strong> @booking.Trip?.StartDate.ToShortDateString() - @booking.Trip?.EndDate.ToShortDateString()<br />
+                <strong>People:</strong> @booking.NumberOfPeople<br />
+                <strong>Total price:</strong> @booking.TotalPrice.ToString("C")
+            </p>
+        </div>
+    </div>
+}
+<form asp-controller="Payments" asp-action="Pay" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input type="hidden" asp-for="BookingId" />
+
+    <div class="row">
+        <div class="col-md-6">
+
+            <div class="form-group mb-3">
+                <label asp-for="CardHolderName"></label>
+                <input asp-for="CardHolderName" class="form-control" />
+                <span asp-validation-for="CardHolderName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CardNumber"></label>
+                <input asp-for="CardNumber" class="form-control" />
+                <span asp-validation-for="CardNumber" class="text-danger"></span>
+                <small class="form-text text-muted">
+                    Use any 16-digit number (fake test card).
+                </small>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+
+            <div class="form-group mb-3">
+                <label asp-for="ExpiryMonth"></label>
+                <input asp-for="ExpiryMonth" class="form-control" />
+                <span asp-validation-for="ExpiryMonth" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ExpiryYear"></label>
+                <input asp-for="ExpiryYear" class="form-control" />
+                <span asp-validation-for="ExpiryYear" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CVV"></label>
+                <input asp-for="CVV" class="form-control" />
+                <span asp-validation-for="CVV" class="text-danger"></span>
+            </div>
+
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Pay now</button>
+    <a asp-controller="Bookings" asp-action="MyBookings" class="btn btn-secondary ms-2">
+        Cancel
+    </a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

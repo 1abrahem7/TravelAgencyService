@@ -1,31 +1,598 @@
-﻿@model IEnumerable<Travel_Agency_Service.Models.Trip> 
+﻿@model IEnumerable<Travel_Agency_Service.Models.Trip>
+
 @{
     ViewData["Title"] = "Trips";
 }
 
-<h1>Available Trips</h1>
-<p>Choose your next adventure.</p>
+<style>
+    .trips-header {
+        background: linear-gradient(135deg, #1e88e5 0%, #00acc1 100%);
+        color: white;
+        padding: 60px 0 40px;
+        margin: -20px -15px 40px -15px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .trips-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+        opacity: 0.3;
+    }
+    
+    .trips-header * {
+        position: relative;
+        z-index: 1;
+    }
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Destination</th>
-            <th>Dates</th>
-            <th>Price</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var trip in Model)
-        {
-            <tr>
-                <td>@trip.Title</td>
-                <td>@trip.Destination</td>
-                <td>@trip.StartDate.ToString("yyyy-MM-dd") - @trip.EndDate.ToString("yyyy-MM-dd")</td>
-                <td>@trip.Price.ToString("C")</td>
-                <td>@trip.ShortDescription</td>
-            </tr>
+        .trips-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
-    </tbody>
-</table>
+
+        .trips-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+    .filters-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #1e88e5;
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+            outline: none;
+        }
+
+    .btn-filter {
+        background: linear-gradient(135deg, #1e88e5 0%, #00acc1 100%);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 136, 229, 0.4);
+            color: white;
+        }
+
+    .trip-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+        .trip-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .trip-card .card-img-top {
+            transition: transform 0.3s ease;
+        }
+
+        .trip-card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+
+        .trip-card .card-body {
+            padding: 20px;
+        }
+
+        .trip-card .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .trip-card .card-subtitle {
+            font-size: 0.95rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+    .rating-stars {
+        color: #ffc107;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+
+    .rating-text {
+        color: #666;
+        font-size: 0.85rem;
+    }
+
+    .trip-info {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 8px;
+    }
+
+        .trip-info strong {
+            color: #333;
+        }
+
+    .price-original {
+        text-decoration: line-through;
+        color: #999;
+        font-size: 0.9rem;
+    }
+
+    .price-discounted {
+        color: #28a745;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .price-regular {
+        color: #333;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .badge-custom {
+        background: linear-gradient(135deg, #1e88e5 0%, #00acc1 100%);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .rooms-available {
+        color: #28a745;
+        font-weight: 600;
+    }
+
+    .rooms-full {
+        color: #dc3545;
+        font-weight: 600;
+    }
+
+    .btn-book {
+        background: linear-gradient(135deg, #1e88e5 0%, #00acc1 100%);
+        border: none;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(30, 136, 229, 0.3);
+            color: white;
+        }
+
+    .btn-details {
+        border: 2px solid #1e88e5;
+        color: #1e88e5;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-details:hover {
+            background: #1e88e5;
+            color: white;
+        }
+
+    .btn-create-trip {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-create-trip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            color: white;
+        }
+
+    .no-trips-message {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+    }
+
+        .no-trips-message i {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+    .alert-info {
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+        background: #f0f4ff;
+        color: #333;
+    }
+
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #dc3545;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        z-index: 1;
+    }
+
+    .card-img-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+
+    @@media (max-width: 768px) {
+        .trips-header h2 {
+            font-size: 2rem;
+        }
+
+        .filters-card {
+            padding: 20px 15px;
+        }
+    }
+</style>
+
+<div class="trips-header">
+    <div class="container">
+        <h2>✈️ Explore Amazing Destinations</h2>
+        <p>Discover your next adventure from our curated collection of travel packages</p>
+    </div>
+</div>
+
+<div class="container">
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="text-center mb-4">
+            <a asp-action="Create" class="btn btn-create-trip">
+                ➕ Create New Trip
+            </a>
+
+        </div>
+    }
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">
+            <strong>ℹ️</strong> @TempData["Message"]
+        </div>
+    }
+
+    <!-- Filters / Search -->
+    <div class="filters-card">
+        <form method="get">
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label class="filter-label">🔍 Search</label>
+                    <input type="text" name="search" value="@Context.Request.Query["search"]" class="form-control" placeholder="Destination, country, or title..." />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="filter-label">📊 Sort By</label>
+                    <select name="sort" class="form-select">
+                        <option value="">Default</option>
+                        <option value="priceAsc" selected="@(Context.Request.Query["sort"] == "priceAsc")">Price: Low to High</option>
+                        <option value="priceDesc" selected="@(Context.Request.Query["sort"] == "priceDesc")">Price: High to Low</option>
+                        <option value="popular" selected="@(Context.Request.Query["sort"] == "popular")">Most Popular</option>
+                        <option value="date" selected="@(Context.Request.Query["sort"] == "date")">Start Date</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="filter-label">🎯 Package Type</label>
+                    <input type="text" name="category" value="@Context.Request.Query["category"]" class="form-control" placeholder="Family, Honeymoon..." />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="filter-label">💰 Min Price</label>
+                    <input type="number" name="minPrice" value="@Context.Request.Query["minPrice"]" class="form-control" placeholder="0" step="0.01" min="0" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="filter-label">💰 Max Price</label>
+                    <input type="number" name="maxPrice" value="@Context.Request.Query["maxPrice"]" class="form-control" placeholder="9999" step="0.01" min="0" />
+                </div>
+
+                <div class="col-md-1 d-flex flex-column justify-content-end">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="discountOnly" value="true" id="discountOnlyCheck" checked="@(Context.Request.Query["discountOnly"] == "true")" />
+                        <label class="form-check-label" for="discountOnlyCheck">
+                            💰 Sale
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="filter-label">📅 Start Date (From)</label>
+                    <input type="date" name="startDate" value="@Context.Request.Query["startDate"]" class="form-control" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="filter-label">📅 Start Date (To)</label>
+                    <input type="date" name="endDate" value="@Context.Request.Query["endDate"]" class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="filter-label">📆 Departure Year</label>
+                    <select name="departureYear" class="form-select">
+                        <option value="">Any Year</option>
+                        @for (int year = DateTime.Now.Year; year <= DateTime.Now.Year + 2; year++)
+                        {
+                            <option value="@year" selected="@(Context.Request.Query["departureYear"] == year.ToString())">@year</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-filter me-2">
+                        🔍 Apply Filters
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        🔄 Clear
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="no-trips-message">
+            <div>✈️</div>
+            <h3>No trips available at the moment</h3>
+            <p>Check back soon for amazing travel packages!</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 trip-card"
+                         style="cursor: pointer;"
+                         data-url="@Url.Action("Details", "Trips", new { id = item.Id })">
+
+                        <div class="card-img-wrapper">
+                            @if (item.IsDiscountActive && item.OldPrice.HasValue)
+                            {
+                                <div class="discount-badge">
+                                    🔥 SALE
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" class="card-img-top" alt="@item.Title"
+                                     style="object-fit: cover; height: 200px;" />
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center"
+                                     style="height: 200px;">
+                                    <span class="text-muted">📸 No image</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@item.Title</h5>
+                            <h6 class="card-subtitle mb-3">
+                                📍 @item.Destination, @item.Country
+                            </h6>
+
+                            <!-- Rating -->
+                            <div class="rating-stars mb-2">
+                                @if (item.AverageRating.HasValue && item.ReviewCount > 0)
+                                {
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= (int)System.Math.Round(item.AverageRating.Value))
+                                        {
+                                            <span>★</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color: #ddd;">☆</span>
+                                        }
+                                    }
+                                    <span class="rating-text ms-1">
+                                        @item.AverageRating.Value.ToString("0.0") (@item.ReviewCount reviews)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="rating-text">No reviews yet</span>
+                                }
+                            </div>
+
+                            <p class="trip-info">
+                                <strong>📅 Dates:</strong>
+                                @item.StartDate.ToString("MMM dd") - @item.EndDate.ToString("MMM dd, yyyy")
+                            </p>
+
+                            <p class="trip-info">
+                                <strong>💵 Price:</strong>
+                                @if (item.IsDiscountActive && item.OldPrice.HasValue)
+                                {
+                                    <span class="price-original">
+                                        @item.OldPrice.Value.ToString("C")
+                                    </span>
+                                    <span class="price-discounted ms-1">
+                                        @item.Price.ToString("C")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="price-regular">@item.Price.ToString("C")</span>
+                                }
+                            </p>
+
+                            <p class="trip-info">
+                                <strong>🏨 Rooms:</strong>
+                                @if (item.AvailableRooms > 0)
+                                {
+                                    <span class="rooms-available">@item.AvailableRooms available</span>
+                                }
+                                else
+                                {
+                                    <span class="rooms-full">Fully booked</span>
+                                }
+                            </p>
+
+                            @if (!string.IsNullOrEmpty(item.PackageType))
+                            {
+                                <p class="mb-2">
+                                    <span class="badge badge-custom">@item.PackageType</span>
+                                </p>
+                            }
+
+                            @if (!string.IsNullOrEmpty(item.ShortDescription))
+                            {
+                                <p class="card-text text-muted small mb-3">
+                                    @item.ShortDescription
+                                </p>
+                            }
+
+                            <div class="mt-auto d-flex justify-content-between align-items-center pt-2 gap-2 flex-wrap">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-details btn-sm">
+                                    View Details
+                                </a>
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="btn btn-outline-secondary btn-sm"
+                                       asp-controller="AdminWaitingList"
+                                       asp-action="TripQueue"
+                                       asp-route-tripId="@item.Id">
+                                        Waiting List
+                                    </a>
+                                }
+
+                                @if (!User.IsInRole("Admin"))
+                                {
+                                    if (item.AvailableRooms > 0)
+                                    {
+                                        @if (User.Identity?.IsAuthenticated == true)
+                                        {
+                                            <a asp-controller="Bookings"
+                                               asp-action="Create"
+                                               asp-route-tripId="@item.Id"
+                                               class="btn btn-book btn-sm">
+                                                📋 Book Now
+                                            </a>
+                                            
+                                            <form asp-controller="ShoppingCart"
+                                                  asp-action="Add"
+                                                  method="post"
+                                                  class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="tripId" value="@item.Id" />
+                                                <input type="hidden" name="numberOfPeople" value="1" />
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    🛒 Add to Cart
+                                                </button>
+                                            </form>
+                                            
+                                            <form asp-controller="Bookings"
+                                                  asp-action="BuyNow"
+                                                  asp-route-tripId="@item.Id"
+                                                  method="post"
+                                                  class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="numberOfPeople" value="1" />
+                                                <button type="submit" class="btn btn-warning btn-sm">
+                                                    💳 Buy Now
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Account"
+                                               asp-action="Login"
+                                               class="btn btn-book btn-sm">
+                                                🔐 Log in to Book
+                                            </a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-outline-secondary btn-sm"
+                                           style="border-radius: 8px;">
+                                            Join Waitlist
+                                        </a>
+                                    }
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".trip-card").forEach(function (card) {
+                card.addEventListener("click", function (e) {
+                    // If the click was on a button or link inside the card, let it behave normally
+                    if (e.target.closest("a, button")) {
+                        return;
+                    }
+                    const url = card.getAttribute("data-url");
+                    if (url) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,110 @@
+@model Travel_Agency_Service.Models.Booking
+@using Travel_Agency_Service.Models
+
+@{
+    ViewData["Title"] = "Edit Booking";
+    var trip = ViewBag.Trip as Trip;
+}
+
+<h2>Edit Booking</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">@TempData["Message"]</div>
+}
+
+@if (Model.Paid)
+{
+    <div class="alert alert-warning">
+        This booking has already been paid and cannot be edited.
+    </div>
+    <a asp-action="MyBookings" class="btn btn-secondary">Back to My Bookings</a>
+    return;
+}
+
+@if (Model.Cancelled)
+{
+    <div class="alert alert-danger">
+        This booking has been cancelled and cannot be edited.
+    </div>
+    <a asp-action="MyBookings" class="btn btn-secondary">Back to My Bookings</a>
+    return;
+}
+
+@if (trip != null)
+{
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4>📋 Trip Information</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Trip:</strong> @trip.Title</p>
+                    <p><strong>Destination:</strong> @trip.Destination, @trip.Country</p>
+                    <p><strong>Travel Dates:</strong> @trip.StartDate.ToString("MMM dd, yyyy") - @trip.EndDate.ToString("MMM dd, yyyy")</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Price per Person:</strong> @trip.Price.ToString("C")</p>
+                    <p><strong>Available Rooms:</strong> @trip.AvailableRooms</p>
+                    <p><strong>Package Type:</strong> @trip.PackageType</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h4>✏️ Edit Booking Details</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3">
+                    <label asp-for="NumberOfPeople" class="form-label">
+                        <strong>Number of People</strong>
+                    </label>
+                    <input asp-for="NumberOfPeople" 
+                           class="form-control" 
+                           type="number" 
+                           min="1" 
+                           max="20" 
+                           required 
+                           onchange="updateTotal()" />
+                    <span asp-validation-for="NumberOfPeople" class="text-danger"></span>
+                    <small class="form-text text-muted">
+                        Maximum 20 people. Available rooms: @trip.AvailableRooms
+                    </small>
+                </div>
+
+                <div class="alert alert-light">
+                    <strong>Current Total:</strong> 
+                    <span id="currentTotal">@Model.TotalPrice.ToString("C")</span>
+                    <br />
+                    <strong>New Total (estimated):</strong> 
+                    <span id="newTotal" class="text-primary">@Model.TotalPrice.ToString("C")</span>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        💾 Save Changes
+                    </button>
+                    <a asp-action="MyBookings" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function updateTotal() {
+            const numberOfPeople = parseInt(document.getElementById('NumberOfPeople').value) || 1;
+            const pricePerPerson = @(trip?.Price ?? 0);
+            const newTotal = numberOfPeople * pricePerPerson;
+            document.getElementById('newTotal').textContent = '$' + newTotal.toFixed(2);
+        }
+    </script>
+}

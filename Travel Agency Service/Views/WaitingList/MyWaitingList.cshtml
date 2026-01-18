@@ -1,0 +1,217 @@
+﻿@model IEnumerable<Travel_Agency_Service.Models.WaitingListStatusVM>
+
+@{
+    ViewData["Title"] = "My Waiting List";
+}
+
+<style>
+    .waiting-list-header {
+        background: linear-gradient(135deg, #1e88e5 0%, #00acc1 100%);
+        color: white;
+        padding: 3rem 0;
+        margin: -20px -15px 30px -15px;
+        border-radius: 0 0 30px 30px;
+    }
+    
+    .notification-alert {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        border: 2px solid #ffb300;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(255, 179, 0, 0.2);
+    }
+    
+    .waiting-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        border-left: 4px solid #e0e0e0;
+    }
+    
+    .waiting-card.notified {
+        border-left-color: #ffb300;
+        background: linear-gradient(to right, #fffef9 0%, white 10%);
+    }
+    
+    .waiting-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+</style>
+
+<div class="waiting-list-header">
+    <div class="container text-center">
+        <h1 class="mb-3">⏰ My Waiting List</h1>
+        <p style="opacity: 0.9; font-size: 1.1rem;">
+            Track your waiting list status for trips
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info fade-in">@TempData["Message"]</div>
+    }
+
+    @if (Model.Any(item => item.Notified))
+    {
+        <div class="notification-alert">
+            <div class="d-flex align-items-center mb-2">
+                <span style="font-size: 2rem; margin-right: 1rem;">🎉</span>
+                <div>
+                    <h4 style="color: #d32f2f; margin: 0;">You've Been Notified!</h4>
+                    <p style="margin: 0.5rem 0 0 0; color: #666;">
+                        You have @Model.Count(item => item.Notified) trip(s) available for booking. Book now before the opportunity passes!
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <div style="font-size: 4rem; margin-bottom: 1.5rem;">📭</div>
+            <h3 style="color: #666; margin-bottom: 1rem;">No Waiting Lists</h3>
+            <p class="text-muted">
+                You are not currently on any waiting lists. Join a waiting list from any fully booked trip.
+            </p>
+            <a asp-controller="Trips" asp-action="Index" class="btn btn-primary btn-lg mt-3">
+                🌍 Explore Trips
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-12">
+                    <div class="waiting-card @(item.Notified ? "notified" : "")">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h4 style="color: #1e88e5; margin-bottom: 0.5rem;">
+                                    <a asp-controller="Trips"
+                                       asp-action="Details"
+                                       asp-route-id="@item.TripId"
+                                       style="color: inherit; text-decoration: none;">
+                                        📍 @item.TripTitle
+                                    </a>
+                                </h4>
+                                <p style="color: #666; margin-bottom: 1rem;">
+                                    🌍 @item.Destination, @item.Country
+                                </p>
+                                <div class="mb-2">
+                                    <small class="text-muted">📅 Joined:</small>
+                                    <strong>@item.JoinedAt.ToString("MMMM dd, yyyy")</strong>
+                                </div>
+                                <div>
+                                    <small class="text-muted">📍 Position in queue:</small>
+                                    <span class="badge @(item.Position == 1 ? "bg-success" : "bg-secondary")" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                        #@item.Position of @item.TotalWaiting
+                                    </span>
+                                </div>
+                                @if (item.Notified && item.NotifiedAt.HasValue)
+                                {
+                                    <div class="mt-2">
+                                        <small class="text-muted">📧 Notified:</small>
+                                        <strong>@item.NotifiedAt.Value.ToString("MMMM dd, yyyy HH:mm")</strong>
+                                        @{
+                                            var daysSinceNotification = (DateTime.Now - item.NotifiedAt.Value).Days;
+                                            var expirationDays = 3; // Default, can be configured
+                                        }
+                                        @if (daysSinceNotification >= expirationDays - 1)
+                                        {
+                                            <span class="badge bg-danger ms-2">
+                                                ⏰ Expires soon!
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-info ms-2">
+                                                @(expirationDays - daysSinceNotification) day(s) left
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                                <div class="mb-3">
+                                    <strong>Status:</strong>
+                                    @if (item.Notified)
+                                    {
+                                        <span class="badge bg-warning" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                            ✅ Notified - Your Turn!
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                                            ⏳ Waiting
+                                        </span>
+                                    }
+                                </div>
+                                
+                                @if (item.Notified)
+                                {
+                                    <div>
+                                        <a asp-controller="Trips"
+                                           asp-action="Details"
+                                           asp-route-id="@item.TripId"
+                                           class="btn btn-primary btn-lg w-100 w-md-auto">
+                                            📋 Book Now!
+                                        </a>
+                                        @{
+                                            var daysSinceNotification = item.NotifiedAt.HasValue ? (DateTime.Now - item.NotifiedAt.Value).Days : 0;
+                                            var expirationDays = 3; // Default
+                                        }
+                                        @if (daysSinceNotification >= expirationDays - 1)
+                                        {
+                                            <p class="text-danger mt-2 mb-0" style="font-size: 0.9rem; font-weight: bold;">
+                                                ⚠️ URGENT: Book immediately or you'll lose your spot!
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-warning mt-2 mb-0" style="font-size: 0.9rem;">
+                                                ⚠️ Book within @(expirationDays - daysSinceNotification) day(s) to secure your spot!
+                                            </p>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div>
+                                        <a asp-controller="Trips"
+                                           asp-action="Details"
+                                           asp-route-id="@item.TripId"
+                                           class="btn btn-outline-secondary w-100 w-md-auto">
+                                            View Trip Details
+                                        </a>
+                                        @if (item.Position > 1)
+                                        {
+                                            <p class="text-muted mt-2 mb-0" style="font-size: 0.9rem;">
+                                                @(item.Position - 1) person(s) ahead of you
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-info mt-2 mb-0" style="font-size: 0.9rem;">
+                                                You're next in line! Waiting for notification...
+                                            </p>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,171 @@
+﻿@model Travel_Agency_Service.Models.Booking
+
+@{
+    ViewData["Title"] = "Pay for Booking";
+}
+
+<h2>Pay for Booking</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-warning">@TempData["Message"]</div>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h4>@Model.Trip?.Title</h4>
+        <p>
+            <strong>Destination:</strong> @Model.Trip?.Destination, @Model.Trip?.Country<br />
+            <strong>Dates:</strong> @Model.Trip?.StartDate.ToShortDateString() - @Model.Trip?.EndDate.ToShortDateString()<br />
+            <strong>Number of people:</strong> @Model.NumberOfPeople<br />
+            <strong>Total price:</strong> <span class="h4 text-success">@Model.TotalPrice.ToString("C")</span>
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <!-- PayPal Payment Option -->
+        <div class="card mb-3" style="border: 2px solid #0070ba;">
+            <div class="card-header bg-primary text-white">
+                <h5>💳 PayPal Payment</h5>
+            </div>
+            <div class="card-body text-center">
+                <p>Pay securely with PayPal</p>
+                <form asp-controller="Payments" asp-action="PayWithPayPal" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="bookingId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-primary btn-lg w-100" style="background-color: #0070ba; border-color: #0070ba;">
+                        <img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_150x38.png" alt="PayPal" style="height: 30px; margin-right: 10px;" />
+                        Pay with PayPal
+                    </button>
+                </form>
+                <small class="text-muted mt-2 d-block">You will be redirected to PayPal to complete payment</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <!-- Credit Card Payment Option -->
+        <div class="card mb-3">
+            <div class="card-header bg-secondary text-white">
+                <h5>💳 Credit/Debit Card</h5>
+            </div>
+            <div class="card-body">
+                <h5>Payment details (simulation)</h5>
+
+                <form asp-action="Pay" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="cardHolder">Card holder name</label>
+                                <input id="cardHolder" name="cardHolder" class="form-control" required />
+                                <div class="invalid-feedback">Please enter the card holder name.</div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="cardNumber">Card number</label>
+                                <input id="cardNumber"
+                                       name="cardNumber"
+                                       class="form-control"
+                                       maxlength="19"
+                                       inputmode="numeric"
+                                       autocomplete="cc-number"
+                                       placeholder="1234 5678 9012 3456"
+                                       required />
+                                <div class="invalid-feedback">Please enter a valid card number.</div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="expiry">Expiry (MM/YY)</label>
+                                <input id="expiry"
+                                       name="expiry"
+                                       class="form-control"
+                                       maxlength="5"
+                                       inputmode="numeric"
+                                       autocomplete="cc-exp"
+                                       placeholder="MM/YY"
+                                       required />
+                                <div class="invalid-feedback">Please enter expiry in MM/YY format.</div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="cvv">CVV</label>
+                                <input id="cvv"
+                                       name="cvv"
+                                       type="password"
+                                       class="form-control"
+                                       maxlength="4"
+                                       inputmode="numeric"
+                                       autocomplete="cc-csc"
+                                       placeholder="123"
+                                       required />
+                                <div class="invalid-feedback">Please enter a valid CVV.</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="paymentReference">Payment reference (optional)</label>
+                                <input id="paymentReference" name="paymentReference" class="form-control" />
+                                <small class="form-text text-muted">
+                                    Leave empty to auto-generate a reference.
+                                </small>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <strong>Note:</strong> This is a simulation. No real payment happens.
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100">💳 Pay with Credit Card</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-3">
+    <a asp-action="MyBookings" class="btn btn-secondary">← Back to My Bookings</a>
+</div>
+
+@section Scripts {
+    <script>
+        // ---- FORMAT CARD NUMBER ----
+        const cardInput = document.getElementById("cardNumber");
+        cardInput?.addEventListener("input", function (e) {
+            let value = e.target.value.replace(/\D/g, "").slice(0, 19); // digits only
+            value = value.replace(/(.{4})/g, "$1 ").trim();             // spaces every 4
+            e.target.value = value;
+        });
+
+        // ---- FORMAT EXPIRY DATE MM/YY ----
+        const expInput = document.getElementById("expiry");
+        expInput?.addEventListener("input", function (e) {
+            let value = e.target.value.replace(/\D/g, "").slice(0, 4);
+            if (value.length >= 3) value = value.substring(0, 2) + "/" + value.substring(2);
+            e.target.value = value;
+        });
+
+        // ---- FORMAT CVV (numbers only) ----
+        const cvvInput = document.getElementById("cvv");
+        cvvInput?.addEventListener("input", function (e) {
+            e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4);
+        });
+
+        // ---- SIMPLE BOOTSTRAP VALIDATION ----
+        (function () {
+            const form = document.querySelector("form");
+            form?.addEventListener("submit", function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add("was-validated");
+            }, false);
+        })();
+    </script>
+}

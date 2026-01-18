@@ -1,0 +1,99 @@
+@model Travel_Agency_Service.Models.AdminSettings
+
+@{
+    ViewData["Title"] = "Admin Settings";
+}
+
+<div class="container my-5">
+    <h2>⚙️ Admin Settings</h2>
+    <p class="text-muted">Manage booking time frames, cancellation rules, and discount settings.</p>
+
+    <form asp-action="Update" method="post">
+        @Html.AntiForgeryToken()
+        
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>📅 Booking Time Frames</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-3">
+                            <label asp-for="DaysBeforeTripLatestBooking" class="form-label">
+                                Days Before Trip - Latest Booking Date
+                            </label>
+                            <input asp-for="DaysBeforeTripLatestBooking" class="form-control" type="number" min="0" max="365" />
+                            <span asp-validation-for="DaysBeforeTripLatestBooking" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Users cannot book a trip less than this many days before departure.
+                            </small>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="DaysBeforeTripCancellationDeadline" class="form-label">
+                                Days Before Trip - Cancellation Deadline
+                            </label>
+                            <input asp-for="DaysBeforeTripCancellationDeadline" class="form-control" type="number" min="0" max="365" />
+                            <span asp-validation-for="DaysBeforeTripCancellationDeadline" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Users cannot cancel a trip less than this many days before departure.
+                            </small>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="DaysBeforeTripReminder" class="form-label">
+                                Days Before Trip - Reminder Sent
+                            </label>
+                            <input asp-for="DaysBeforeTripReminder" class="form-control" type="number" min="0" max="365" />
+                            <span asp-validation-for="DaysBeforeTripReminder" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Send reminder email this many days before trip departure.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>💰 Discount Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group mb-3">
+                            <label asp-for="MaxDiscountDurationDays" class="form-label">
+                                Maximum Discount Duration (Days)
+                            </label>
+                            <input asp-for="MaxDiscountDurationDays" class="form-control" type="number" min="1" max="7" />
+                            <span asp-validation-for="MaxDiscountDurationDays" class="text-danger"></span>
+                            <small class="form-text text-muted">
+                                Discounts will automatically expire after this many days (maximum 7 days).
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <p class="text-muted mb-0">
+                            <small>
+                                Last Updated: @Model.LastUpdated.ToString("g")
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">💾 Save Settings</button>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

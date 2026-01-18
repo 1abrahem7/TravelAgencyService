@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "o5d7XUj+YOE=",
+  "dgSpecHash": "9n0A8motq5w=",
   "success": true,
-  "projectFilePath": "C:\\Users\\איברהים אזברגה\\source\\repos\\Travel Agency Service\\Travel Agency Service\\Travel Agency Service.csproj",
+  "projectFilePath": "C:\\Users\\איברהים אזברגה\\OneDrive\\Desktop\\Travel Agency Service final\\Travel Agency Service\\Travel Agency Service\\Travel Agency Service\\Travel Agency Service.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\איברהים אזברגה\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\איברהים אזברגה\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
@@ -135,6 +135,7 @@
     "C:\\Users\\איברהים אזברגה\\.nuget\\packages\\nuget.projectmodel\\6.11.0\\nuget.projectmodel.6.11.0.nupkg.sha512",
     "C:\\Users\\איברהים אזברגה\\.nuget\\packages\\nuget.protocol\\6.11.0\\nuget.protocol.6.11.0.nupkg.sha512",
     "C:\\Users\\איברהים אזברגה\\.nuget\\packages\\nuget.versioning\\6.11.0\\nuget.versioning.6.11.0.nupkg.sha512",
+    "C:\\Users\\איברהים אזברגה\\.nuget\\packages\\questpdf\\2024.10.3\\questpdf.2024.10.3.nupkg.sha512",
     "C:\\Users\\איברהים אזברגה\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.6\\sqlitepclraw.bundle_e_sqlite3.2.1.6.nupkg.sha512",
     "C:\\Users\\איברהים אזברגה\\.nuget\\packages\\sqlitepclraw.core\\2.1.6\\sqlitepclraw.core.2.1.6.nupkg.sha512",
     "C:\\Users\\איברהים אזברגה\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.6\\sqlitepclraw.lib.e_sqlite3.2.1.6.nupkg.sha512",

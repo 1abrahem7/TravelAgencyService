@@ -1,0 +1,164 @@
+﻿@model IEnumerable<Travel_Agency_Service.Models.Booking>
+
+@{
+    ViewData["Title"] = "My Bookings";
+    var filter = ViewBag.Filter as string ?? "all";
+    var now = ViewBag.Now as DateTime? ?? DateTime.Now;
+}
+
+<h2>My Bookings</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">@TempData["Message"]</div>
+}
+
+<!-- Filter Tabs -->
+<div class="mb-3">
+    <div class="btn-group" role="group">
+        <a asp-action="MyBookings" asp-route-filter="all" class="btn @(filter == "all" ? "btn-primary" : "btn-outline-primary")">
+            All Bookings
+        </a>
+        <a asp-action="MyBookings" asp-route-filter="upcoming" class="btn @(filter == "upcoming" ? "btn-primary" : "btn-outline-primary")">
+            Upcoming Trips
+        </a>
+        <a asp-action="MyBookings" asp-route-filter="past" class="btn @(filter == "past" ? "btn-primary" : "btn-outline-primary")">
+            Past Trips
+        </a>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        <p>You have no bookings @(filter != "all" ? $"({filter})" : "") yet.</p>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Trip</th>
+                    <th>Destination</th>
+                    <th>Travel Dates</th>
+                    <th>Booking Date</th>
+                    <th>People</th>
+                    <th>Total Price</th>
+                    <th>Time Until Departure</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model)
+                {
+                    var isUpcoming = b.Trip != null && b.Trip.StartDate > now && !b.Cancelled;
+                    var isPast = b.Trip != null && b.Trip.StartDate <= now;
+                    var daysUntilTrip = b.Trip != null ? (b.Trip.StartDate.Date - now.Date).Days : 0;
+                    
+                    <tr>
+                        <td><strong>@b.Trip?.Title</strong></td>
+                        <td>@b.Trip?.Destination, @b.Trip?.Country</td>
+                        <td>
+                            @if (b.Trip != null)
+                            {
+                                <div>@b.Trip.StartDate.ToString("MMM dd, yyyy")</div>
+                                <small class="text-muted">to @b.Trip.EndDate.ToString("MMM dd, yyyy")</small>
+                            }
+                        </td>
+                        <td>@b.BookingDate.ToShortDateString()</td>
+                        <td>@b.NumberOfPeople</td>
+                        <td><strong>@b.TotalPrice.ToString("C")</strong></td>
+                        <td>
+                            @if (isUpcoming && daysUntilTrip >= 0)
+                            {
+                                <span class="badge bg-info">
+                                    @if (daysUntilTrip == 0)
+                                    {
+                                        <text>Today!</text>
+                                    }
+                                    else if (daysUntilTrip == 1)
+                                    {
+                                        <text>1 day remaining</text>
+                                    }
+                                    else
+                                    {
+                                        <text>@daysUntilTrip days remaining</text>
+                                    }
+                                </span>
+                            }
+                            else if (isPast)
+                            {
+                                <span class="badge bg-secondary">Past trip</span>
+                            }
+                            else if (b.Cancelled)
+                            {
+                                <span class="badge bg-danger">Cancelled</span>
+                            }
+                        </td>
+                        <td>
+                            @if (b.Cancelled)
+                            {
+                                <span class="badge bg-danger">Cancelled</span>
+                            }
+                            else if (b.Paid)
+                            {
+                                <span class="badge bg-success">Paid</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning">Pending Payment</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <!-- PAY BUTTON -->
+                                @if (!b.Cancelled && !b.Paid)
+                                {
+                                    <a asp-action="Pay"
+                                       asp-route-id="@b.Id"
+                                       class="btn btn-sm btn-success">
+                                        💳 Pay
+                                    </a>
+                                    
+                                    <!-- EDIT BUTTON (only before payment) -->
+                                    <a asp-action="Edit"
+                                       asp-route-id="@b.Id"
+                                       class="btn btn-sm btn-outline-primary">
+                                        ✏️ Edit
+                                    </a>
+                                }
+
+                                <!-- DOWNLOAD ITINERARY (only if paid) -->
+                                @if (b.Paid && !b.Cancelled && b.Trip != null)
+                                {
+                                    <a asp-action="DownloadItinerary"
+                                       asp-route-id="@b.Id"
+                                       class="btn btn-sm btn-outline-info">
+                                        📄 Itinerary
+                                    </a>
+                                }
+
+                                <!-- CANCEL BUTTON -->
+                                @if (!b.Cancelled && b.Trip != null && b.Trip.StartDate > now)
+                                {
+                                    <form asp-action="Cancel" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@b.Id" />
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Are you sure you want to cancel this booking?');">
+                                            ❌ Cancel
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,9 +1,353 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome to My Travel Agency</h1>
-    <p>Book your next trip with us 🌍✈️</p>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #1e88e5 0%, #00acc1 100%);
+        color: white;
+        padding: 100px 0 80px;
+        margin-top: -20px;
+        border-radius: 0 0 50% 50% / 0 0 4% 4%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><path d="M30 0 L35 20 L55 20 L38 32 L43 52 L30 40 L17 52 L22 32 L5 20 L25 20 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .hero-section * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 40px;
+        opacity: 0.95;
+    }
+
+    .cta-button {
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+    }
+
+    .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary-custom {
+        background: white;
+        color: #1e88e5;
+        font-weight: 600;
+    }
+
+    .btn-primary-custom:hover {
+        background: #f5f5f5;
+        color: #1e88e5;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-outline-custom {
+        background: transparent;
+        border: 2px solid white;
+        color: white;
+        font-weight: 600;
+    }
+
+    .btn-outline-custom:hover {
+        background: white;
+        color: #1e88e5;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .features-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: 30px;
+        border-radius: 15px;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease;
+        height: 100%;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: #1e88e5;
+        filter: drop-shadow(0 4px 8px rgba(30, 136, 229, 0.3));
+    }
+
+    .feature-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .feature-description {
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .stats-section {
+        background: linear-gradient(135deg, #1e88e5 0%, #00acc1 100%);
+        color: white;
+        padding: 60px 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stats-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .stats-section * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 50px;
+        text-align: center;
+        color: #333;
+    }
+
+    @@media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .cta-button {
+            padding: 12px 30px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="hero-title">Discover Your Next Adventure</h1>
+        <p class="hero-subtitle">
+            Explore the world with confidence. Book amazing trips, manage your bookings, and create unforgettable
+            memories.
+        </p>
+        <div class="mt-4">
+            <a class="btn cta-button btn-primary-custom me-3" asp-controller="Trips" asp-action="Index">
+                🌍 Browse Trips
+            </a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a class="btn cta-button btn-outline-custom" asp-controller="Bookings" asp-action="MyBookings">
+                    📋 My Bookings
+                </a>
+            }
+            else
+            {
+                <a class="btn cta-button btn-outline-custom" asp-controller="Account" asp-action="Login">
+                    🔐 Login
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section">
+    <div class="container">
+        <h2 class="section-title">Why Choose Us</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">✈️</div>
+                    <h3 class="feature-title">Wide Selection</h3>
+                    <p class="feature-description">
+                        Browse hundreds of carefully curated travel packages to destinations worldwide. From
+                        budget-friendly to luxury experiences.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3 class="feature-title">Secure Booking</h3>
+                    <p class="feature-description">
+                        Book with confidence using our secure payment system. Your transactions are protected with
+                        industry-standard encryption.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Easy Management</h3>
+                    <p class="feature-description">
+                        Manage all your bookings in one place. View trip details, track payments, and make changes
+                        effortlessly.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">@ViewBag.TripCount</div>
+                    <div class="stat-label">Active Trips in Catalog</div>
+                </div>
+            </div>
+            <div class="col-md-4 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Max Upcoming Trips per User</div>
+                </div>
+            </div>
+            <div class="col-md-4 col-12 mt-3 mt-md-0">
+                <div class="stat-item">
+                    <div class="stat-number">5★</div>
+                    <div class="stat-label">Service Quality Goal</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    var serviceReviews = ViewBag.ServiceReviews as IEnumerable<Travel_Agency_Service.Models.ServiceReview>;
+}
+
+<!-- Service Reviews Section -->
+<div class="container my-5 py-5">
+    <h2 class="section-title">What Users Think About Our Service</h2>
+
+    @if (serviceReviews == null || !serviceReviews.Any())
+    {
+        <p class="text-center text-muted">
+            No feedback yet. Be the first to share your experience with our service!
+        </p>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var r in serviceReviews)
+            {
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">⭐</div>
+                        <h3 class="feature-title">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= r.Rating)
+                                {
+                                    @:<span>★</span>
+                                }
+                                else
+                                {
+                                    @:<span style="color:#ddd;">☆</span>
+                                }
+                            }
+                        </h3>
+                        <p class="feature-description">
+                            "@r.Comment"
+                        </p>
+                        <p class="mt-3 mb-0 text-muted" style="font-size:0.85rem;">
+                            @if (r.User != null && !string.IsNullOrEmpty(r.User.FullName))
+                            {
+                                @:— @r.User.FullName
+                            }
+                            else
+                            {
+                                @:— Anonymous user
+                            }
+                            <br />
+                            <span>@r.CreatedAt.ToString("g")</span>
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="text-center mt-4">
+            <a class="btn btn-primary" asp-controller="ServiceReviews" asp-action="Create">
+                Leave Your Feedback
+            </a>
+        </div>
+    }
+    else
+    {
+        <p class="text-center mt-4">
+            <a asp-controller="Account" asp-action="Login">Log in</a> to rate your booking experience.
+        </p>
+    }
 </div>

@@ -1,0 +1,92 @@
+@model List<Travel_Agency_Service.Models.ShoppingCartItem>
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="container my-5">
+    <h2>🛒 Shopping Cart</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            <h4>Your cart is empty</h4>
+            <p>Add some amazing trips to your cart!</p>
+            <a asp-controller="Trips" asp-action="Index" class="btn btn-primary">Browse Trips</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-8">
+                @foreach (var item in Model)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" class="img-fluid rounded" alt="@item.TripTitle" />
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>@item.TripTitle</h5>
+                                    <p class="text-muted mb-2">Price per person: @item.Price.ToString("C")</p>
+                                    
+                                    <form asp-controller="ShoppingCart" asp-action="UpdateQuantity" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="tripId" value="@item.TripId" />
+                                        <div class="input-group" style="width: 150px;">
+                                            <label class="input-group-text">People:</label>
+                                            <input type="number" name="numberOfPeople" value="@item.NumberOfPeople" 
+                                                   min="1" max="20" class="form-control" 
+                                                   onchange="this.form.submit()" />
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <h5 class="text-primary">@item.TotalPrice.ToString("C")</h5>
+                                    <form asp-controller="ShoppingCart" asp-action="Remove" method="post" class="mt-2">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="tripId" value="@item.TripId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Order Summary</h5>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <strong>@ViewBag.Total.ToString("C")</strong>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-3">
+                            <span><strong>Total:</strong></span>
+                            <strong class="text-primary">@ViewBag.Total.ToString("C")</strong>
+                        </div>
+                        
+                        <form asp-controller="ShoppingCart" asp-action="Checkout" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-primary w-100 mb-2">
+                                💳 Proceed to Checkout
+                            </button>
+                        </form>
+                        
+                        <a asp-controller="Trips" asp-action="Index" class="btn btn-outline-secondary w-100">
+                            Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

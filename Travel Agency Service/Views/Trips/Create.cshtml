@@ -1,0 +1,122 @@
+﻿@model Travel_Agency_Service.Models.Trip
+
+@{
+    ViewData["Title"] = "Create Trip";
+}
+
+<h2>Create Trip</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Destination" class="form-label"></label>
+        <input asp-for="Destination" class="form-control" />
+        <span asp-validation-for="Destination" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Country" class="form-label"></label>
+        <input asp-for="Country" class="form-control" />
+        <span asp-validation-for="Country" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StartDate" class="form-label"></label>
+        <input asp-for="StartDate" class="form-control" type="date" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EndDate" class="form-label"></label>
+        <input asp-for="EndDate" class="form-control" type="date" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="AvailableRooms" class="form-label"></label>
+        <input asp-for="AvailableRooms" class="form-control" />
+        <span asp-validation-for="AvailableRooms" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="OldPrice" class="form-label"></label>
+        <input asp-for="OldPrice" class="form-control" />
+        <span asp-validation-for="OldPrice" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IsDiscountActive" class="form-label"></label>
+        <input asp-for="IsDiscountActive" class="form-check-input" />
+        <span asp-validation-for="IsDiscountActive" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PackageType" class="form-label"></label>
+        <input asp-for="PackageType" class="form-control" />
+        <span asp-validation-for="PackageType" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="AgeLimit" class="form-label"></label>
+        <input asp-for="AgeLimit" class="form-control" />
+        <span asp-validation-for="AgeLimit" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PopularityScore" class="form-label"></label>
+        <input asp-for="PopularityScore" class="form-control" />
+        <span asp-validation-for="PopularityScore" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DepartureYear" class="form-label"></label>
+        <input asp-for="DepartureYear" class="form-control" />
+        <span asp-validation-for="DepartureYear" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <div class="form-check">
+            <input asp-for="IsVisible" class="form-check-input" />
+            <label asp-for="IsVisible" class="form-check-label"></label>
+        </div>
+        <span asp-validation-for="IsVisible" class="text-danger"></span>
+        <small class="form-text text-muted">Hide this trip from the public catalog if unchecked</small>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ImageUrl" class="form-label"></label>
+        <input asp-for="ImageUrl" class="form-control" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Image</label>
+        <input type="file" name="imageFile" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ShortDescription" class="form-label"></label>
+        <textarea asp-for="ShortDescription" class="form-control"></textarea>
+        <span asp-validation-for="ShortDescription" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Back to list</a>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,110 @@
+Introduction to Computer Communications – Project —a website in MVC  
+The project – Travel Agency Service  
+Instructions:   
+1. The project can be developed in pairs in MVC ONLY.    
+2. The project is to be defended during the dates published in Moodle (later in the course). Both 
+partners must be present during the defense. Both partners will be graded separately.  
+3. The project must be submitted till 18/01/2026 into Moodle. Both partners should submit the 
+project and the names of both partners must be included. Don’t write the partners’ names in 
+the comments section in Moodle!  
+4. The delay can be granted only due to the sickness and military reservation service (miluim). The 
+delay can be asked only via a student request with the attachment of relevant documents.  
+5. Copying ANY part is strongly prohibited and will be graded by 0, all the students will stand to 
+disciplinary committee in this case.  
+You are to develop a website for managing a Travel Agency Service, using all technologies taught in the 
+lab sessions. 
+The user types and their permissions, respectfully: admin (managing the site) and users (searching trips, 
+booking packages, paying, receiving notifications). Other users can be added with their permissions.  
+Different types of users should get a separate page view according to their permissions.  
+The Travel Agency Service is a simplified version of real platforms such as Booking.com, Expedia, or 
+Trip.com. It should manage travel packages, bookings, waiting lists, payments, trip catalog, user 
+notifications, reviews, etc. 
+The following is a necessary list of requirements to be implemented in the project. You are responsible 
+of taking care of other possible constraints (e.g., multiple users simultaneously trying to book the last 
+available room, invalid payment data, etc.). All the constraints, which do not meet requirements, must 
+give a relative error message.  
+Admin is responsible for:   
+• Adding/removing travel packages; every package must include destination, country, travel dates 
+(start/end), price, number of available rooms, package type (family, honeymoon, adventure, 
+cruise, luxury, etc.), age limitation, trip description, and images. 
+• Managing the prices. Admin can adjust package prices and apply temporary discounts. If a 
+package has a price decrease, show the strikethrough previous price and the new price. The 
+discount is active for a limited time only (a week at the most). 
+• Managing the waiting list (in case a package has no rooms left). Each package has a fixed number 
+of rooms. When it’s a user’s turn to book, (s)he gets notified by email that a room is available. 
+• Managing the trip catalog (categories, sorting options, visibility of packages, etc.). 
+• Managing the booking time frames – Admin defines rules such as the latest date a trip can be 
+booked or when cancellations are allowed. Admin also triggers reminders (for example, a 
+reminder sent 5 days before the trip departure). 
+• Managing the registered users in the database – adding/removing users, viewing user booking 
+history, and managing user account status. 
+• Etc. 
+Users can:  
+• Choose a trip according to its destination, country, keywords, or package name. 
+• Search for a needed trip in the search field. The search can be performed even after a user 
+enters a partial query (for example, “Paris” instead of “Paris Honeymoon Package”). In this case, 
+all trips related to Paris are shown as the search results. 
+• Book an available trip. A user can book up to 3 upcoming trips at the same time. 
+• Book the last available room while browsing the site from the same localhost. The first person to 
+request the last room will be able to book it. All other users will be given a chance to enter a 
+waiting list, which shows how many people are waiting for the same trip and when a room is 
+estimated to become available. A user can then decide if (s)he wants to enter the waiting list. 
+• Make a payment using a credit card. Please note – no credit card number must be stored in the 
+database! The user will be asked for a credit card number every time (s)he books a trip. 
+• See booked trips in his/her personal dashboard. 
+• If it’s an upcoming trip, the remaining time until departure is shown, and the itinerary can be 
+downloaded (PDF or document). 
+• Past trips are optionally shown. 
+• A user can cancel a trip only if it’s within the valid cancellation period. 
+• Rate / give feedback for any trip that they booked. The rating/feedback must appear on the 
+relevant trip page. 
+• Rate / give feedback for the booking/purchasing experience on the website. The rating/feedback 
+must be published on the main page in the dedicated section “What users think about our 
+service.” 
+• Etc.  
+Trip gallery:   
+• Has a list of travel packages with images, destination, country, price (normal and discounted if 
+active), available rooms, travel dates, category, and age limitation. 
+• Has at least 25 trips in its database – the dynamic number of trips is shown on the main page 
+and changes dynamically once trips are added or deleted. 
+• A trip list can be ordered according to: 
+o price increase (from low to high) 
+o price decrease (from high to low) 
+o most popular 
+o category (family, honeymoon, adventure, cruise, luxury, etc.) 
+o travel date 
+• Users can choose a trip of a specific destination/country/category/price range/travel date. 
+• Trips list can be filtered to show only discounted packages (on sale). 
+• Some trips can have multiple departure years for the same destination. 
+• Trips options are Book and Buy Now (direct payment) – there are two buttons for each trip. 
+• Etc. 
+Booking a trip:  
+• Users can choose to book a travel package. 
+• Users can download the itinerary after booking (PDF or document). 
+• A booking option can be changed only before pressing the Confirm Payment button. 
+• Users receive a notification email after payment. 
+• If a trip is fully booked, users can join a waiting list. 
+• Users can book immediately if rooms are available. 
+• It’s impossible to book a full trip. 
+• Users cannot exceed 3 active booked trips at the same time. 
+• Users cannot book a trip when it’s not their turn in the waiting list. 
+• Only registered users can book a trip. It’s obligatory to store an email so the user receives 
+notifications. 
+• Etc. 
+Payment:   
+• Managing a shopping cart. 
+• Processing a payment using an SSL certificate (free certificates allowed – mandatory). 
+• No credit card numbers must be stored in the database. 
+• Optionally, users can pay via PayPal (redirection to PayPal API). 
+• Users can place trips in a shopping cart and pay from there or pay directly from the gallery by 
+pressing Buy Now. 
+• After payment, a notification message is shown (success or failure), and the user is redirected to 
+the Home page. 
+• Etc. 
+General requirements:   
+• All data must be managed in the database according to user permissions. 
+• Any violation will result in point reduction. 
+• Using artificial or placeholder names (e.g., Test1, test2) for users, destinations, or other project 
+parameters will reduce your grade. Realistic data is required. 
+Note: You are responsible of other logical constraints as stated before!  
+Good Luck!!  

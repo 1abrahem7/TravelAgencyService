@@ -1,0 +1,473 @@
+﻿@using Travel_Agency_Service.Models
+@{
+    ViewData["Title"] = "Create Booking";
+    var trip = ViewBag.Trip as Trip;
+}
+
+<style>
+    .booking-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 60px 0 40px;
+        margin: -20px -15px 40px -15px;
+        text-align: center;
+    }
+
+        .booking-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .booking-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+    .booking-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .trip-details-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin-bottom: 30px;
+        border: none;
+    }
+
+    .trip-image-section {
+        position: relative;
+        height: 300px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .trip-image-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .trip-image-placeholder {
+        font-size: 5rem;
+        color: white;
+        opacity: 0.8;
+    }
+
+    .trip-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 700;
+        color: #667eea;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .trip-details-content {
+        padding: 35px;
+    }
+
+    .trip-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .trip-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 25px;
+    }
+
+    .info-item {
+        padding: 15px;
+        background: #f8f9ff;
+        border-radius: 12px;
+        border-left: 4px solid #667eea;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        color: #333;
+        font-weight: 700;
+    }
+
+        .info-value.price {
+            color: #28a745;
+            font-size: 1.3rem;
+        }
+
+        .info-value.rooms {
+            color: #667eea;
+        }
+
+    .booking-form-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+    .form-section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 1rem;
+        display: block;
+    }
+
+    .form-control {
+        padding: 15px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+    .price-calculator {
+        background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 20px;
+        border: 2px solid #667eea;
+    }
+
+    .calculator-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+
+        .calculator-row.total {
+            padding-top: 15px;
+            border-top: 2px solid #667eea;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+    .btn-confirm-booking {
+        width: 100%;
+        padding: 18px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+
+        .btn-confirm-booking:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+    .btn-back {
+        width: 100%;
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        background: transparent;
+        border: 2px solid #667eea;
+        color: #667eea;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+    }
+
+        .btn-back:hover {
+            background: #667eea;
+            color: white;
+        }
+
+    .alert-danger {
+        border-radius: 12px;
+        border-left: 4px solid #dc3545;
+        background: #ffe6e6;
+        color: #721c24;
+        padding: 18px 20px;
+        margin-bottom: 25px;
+        font-weight: 500;
+    }
+
+    .booking-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        position: relative;
+    }
+
+        .booking-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+    .step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .step-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        font-weight: 700;
+        color: #999;
+    }
+
+    .step.active .step-circle {
+        background: #667eea;
+        border-color: #667eea;
+        color: white;
+    }
+
+    .step-label {
+        font-size: 0.9rem;
+        color: #999;
+        font-weight: 600;
+    }
+
+    .step.active .step-label {
+        color: #667eea;
+    }
+
+    @@media (max-width: 768px) {
+        .booking-header h2 {
+            font-size: 2rem;
+        }
+
+        .trip-details-content {
+            padding: 25px;
+        }
+
+        .trip-title {
+            font-size: 1.6rem;
+        }
+
+        .trip-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .booking-form-card {
+            padding: 25px;
+        }
+    }
+</style>
+
+<div class="booking-header">
+    <div class="container">
+        <h2>🎫 Complete Your Booking</h2>
+        <p>You're one step away from an amazing journey</p>
+    </div>
+</div>
+
+<div class="container booking-container">
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-danger">
+            <strong>⚠️ Error:</strong> @TempData["Message"]
+        </div>
+    }
+
+    <!-- Booking Steps -->
+    <div class="booking-steps">
+        <div class="step active">
+            <div class="step-circle">1</div>
+            <div class="step-label">Select Trip</div>
+        </div>
+        <div class="step active">
+            <div class="step-circle">2</div>
+            <div class="step-label">Booking Details</div>
+        </div>
+        <div class="step">
+            <div class="step-circle">3</div>
+            <div class="step-label">Payment</div>
+        </div>
+        <div class="step">
+            <div class="step-circle">4</div>
+            <div class="step-label">Confirmation</div>
+        </div>
+    </div>
+
+    @if (trip != null)
+    {
+        <!-- Trip Details Card -->
+        <div class="trip-details-card">
+            <div class="trip-image-section">
+                @if (!string.IsNullOrEmpty(trip.ImageUrl))
+                {
+                    <img src="@trip.ImageUrl" alt="@trip.Title" />
+                }
+                else
+                {
+                    <div class="trip-image-placeholder">✈️</div>
+                }
+                <div class="trip-badge">Selected Trip</div>
+            </div>
+
+            <div class="trip-details-content">
+                <h3 class="trip-title">@trip.Title</h3>
+
+                <div class="trip-info-grid">
+                    <div class="info-item">
+                        <div class="info-label">📍 Destination</div>
+                        <div class="info-value">@trip.Destination, @trip.Country</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">📅 Travel Dates</div>
+                        <div class="info-value">
+                            @trip.StartDate.ToString("MMM dd") - @trip.EndDate.ToString("MMM dd, yyyy")
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">💵 Price Per Person</div>
+                        <div class="info-value price">@trip.Price.ToString("C")</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">🏨 Available Rooms</div>
+                        <div class="info-value rooms">@trip.AvailableRooms rooms left</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="booking-form-card">
+            <h3 class="form-section-title">👥 Booking Information</h3>
+
+            <form asp-controller="Bookings" asp-action="Create" method="post" id="bookingForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="tripId" value="@trip.Id" />
+
+                <div class="form-group mb-4">
+                    <label for="numberOfPeople">
+                        Number of People
+                        <small class="text-muted">(Maximum based on available rooms)</small>
+                    </label>
+                    <input id="numberOfPeople"
+                           name="numberOfPeople"
+                           class="form-control"
+                           type="number"
+                           min="1"
+                           max="@trip.AvailableRooms"
+                           value="1"
+                           required />
+                </div>
+
+                <!-- Price Calculator -->
+                <div class="price-calculator">
+                    <div class="calculator-row">
+                        <span>Price per person:</span>
+                        <span id="pricePerPerson">@trip.Price.ToString("C")</span>
+                    </div>
+                    <div class="calculator-row">
+                        <span>Number of people:</span>
+                        <span id="displayPeople">1</span>
+                    </div>
+                    <div class="calculator-row total">
+                        <span>Total Amount:</span>
+                        <span id="totalPrice">@trip.Price.ToString("C")</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-confirm-booking">
+                    🎉 Confirm Booking & Proceed to Payment
+                </button>
+
+                <a asp-action="MyBookings" class="btn btn-back">
+                    ← Back to My Bookings
+                </a>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <strong>⚠️ Error:</strong> Trip information not found. Please go back and try again.
+        </div>
+        <a asp-controller="Trips" asp-action="Index" class="btn btn-back">
+            ← Browse Trips
+        </a>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const numberOfPeopleInput = document.getElementById('numberOfPeople');
+            const displayPeople = document.getElementById('displayPeople');
+            const totalPriceDisplay = document.getElementById('totalPrice');
+            const pricePerPerson = @trip?.Price ?? 0;
+
+            function updateTotal() {
+                const people = parseInt(numberOfPeopleInput.value) || 1;
+                const total = people * pricePerPerson;
+
+                displayPeople.textContent = people;
+                totalPriceDisplay.textContent = total.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                });
+            }
+
+            numberOfPeopleInput.addEventListener('input', updateTotal);
+        });
+    </script>
+}
